@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <link rel="shortcut icon" href="../assets/icon/favicon2.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaTech | Avisos</title>
+
+    <link rel="stylesheet" href="./css/mural.css">
+    <link rel="stylesheet" href="./css/dashboards.css">
+    <script src="../js/funcoes.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body onload="validarSessao(), atualizarFeed()" style="background-color: #161618;">
+    <!-- <body onload="validarSessao()"> -->
+
+    <div class="aba">
+        <div class="header-left">
+            <div class="img_aba">
+                <a href="index.html"><img class="img_logo" src="./assets/img/logo2.png"></a>
+            </div>
+            <h1 class="titulo_aba"> Bem vindo, <h1 style="color: #ff6484;" id="b_usuario"></h1>
+                <div class="botoes">
+                    <a href="Dashboard.html">
+                        <button class="b1">Voltar</button>
+                    </a>
+                    <button class="b2" onclick="limparSessao()">Sair</button>
+                </div>
+        </div>
+    </div>
+
+    <div class="dash-right">
+
+        <div class="avisos">
+            <div class="container">
+                <h1>Publicar um aviso</h1>
+                <div class="div-form">
+                    <form id="form_postagem" method="post" onsubmit="return publicar()">
+                        <label>
+                            Título:
+                            <br>
+                            <input name="titulo" id="titulo" maxlength="100" type="text">
+                        </label>
+                        <br>
+                        <label>
+                            Descrição (máximo de 250 caracteres):
+                            <br>
+                            <textarea name="descricao" id="textarea_descricao" maxlength="250" rows="5"></textarea>
+                        </label>
+                        <br>
+                        <button>Editar</button>
+                    </form>
+                </div>
+                <h1>Mural de Avisos</h1>
+                <div class="div-results">
+                    <div id="feed_container" class="feed-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- MODAL -->
+        <!-- <div id="div_modal" class="div-modal">
+                <div id="modal_backdrop" onclick="fecharModal()" class="modal-backdrop">
+                </div>
+                <div id="modal_container" class="modal-container">
+                    <button class="btn-fechar-modal" onclick="fecharModal()">X</button>
+                </div>
+            </div> -->
+
+        <!-- AGUARDAR -->
+        <!-- <div id="div_aguardar" class="div-aguardar">
+                <img src="./assets/aguarde-pink3.gif" id="img_aguarde">
+            </div>  -->
+
+    </div>
+    </div>
+
+
+
+
+</body>
+
+</html>
+
+<script>
+
+    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+    function listarInfosDeUm() {
+        console.log("Criar função de trazer informações de post escolhido");
+    }
+
+    function editar() {
+        fetch(`/avisos/editar/${sessionStorage.getItem("ID_POSTAGEM_EDITANDO")}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                descricao: textarea_descricao.value
+            })
+        }).then(function (resposta) {
+
+            if (resposta.ok) {
+                window.alert("Post atualizado com sucesso pelo usuario de email: " + sessionStorage.getItem("EMAIL_USUARIO") + "!");
+                window.location = "/dashboard/mural.html"
+            } else if (resposta.status == 404) {
+                window.alert("Deu 404!");
+            } else {
+                throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+
+</script>
