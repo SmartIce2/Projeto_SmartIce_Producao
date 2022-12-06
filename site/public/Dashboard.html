@@ -24,20 +24,20 @@
           <a href="index.html"><img class="img_logo" src="./assets/img/logo2.png"></a>
         </div>
         <h1 class="titulo_aba"> Bem vindo, <h1 style="color: #ff6484;" id="b_usuario"></h1>
-        <div class="botoes">
-          <button class="b1" onclick="freezers()">Freezers</button>
-          <button class="b2" onclick="veiculos()">Veículos</button>
-           <a href="./mural.html"><button class="b3">Mural</button></a>
-          <a href="#cadastro_Funcionario">
-            <button class="b4" onclick="cadastro_funcionario()">
-              <p>Cadastrar Funcionario</p>
-            </button>
-          </a>
-          <a href="https://reparossmart.auvo.com.br/Login#signin">
-            <button class="b2">Suporte</button>
-          </a>
-          <button class="b2" onclick="limparSessao()">Sair</button>
-        </div>
+          <div class="botoes">
+            <button class="b1" onclick="freezers()">Freezers</button>
+            <button class="b2" onclick="veiculos()">Veículos</button>
+            <a href="./mural.html"><button class="b3">Mural</button></a>
+            <a href="#cadastro_Funcionario">
+              <button class="b4" onclick="cadastro_funcionario()">
+                <p>Cadastrar Funcionario</p>
+              </button>
+            </a>
+            <a href="https://reparossmart.auvo.com.br/Login#signin">
+              <button class="b2">Suporte</button>
+            </a>
+            <button class="b2" onclick="limparSessao()">Sair</button>
+          </div>
       </div>
     </div>
 
@@ -55,7 +55,7 @@
       <div class="container-alerta">
         <div id="alerta" class="caixa-alerta frio">
           <span class="span_situacao">CRITICO FRIO</span>
-          <span id="freezerFrio" class="span_graus">0</span>
+          <span id="freezerFrio" class="span_graus"></span>
         </div>
         <div id="alerta_freezer1" class="caixa-alerta">
           <span id="span_situacao_freezer1" class="span_situacao">SITUAÇÃO ATUAL</span>
@@ -63,7 +63,7 @@
         </div>
         <div id="alerta" class="caixa-alerta quente">
           <span class="span_situacao">CRITICO QUENTE</span>
-          <span id="freezerQuente" class="span_graus">0</span>
+          <span id="freezerQuente" class="span_graus"></span>
         </div>
       </div>
 
@@ -137,7 +137,7 @@
       <div class="container-alerta">
         <div id="alerta" class="caixa-alerta frio">
           <span class="span_situacao">CRITICO FRIO</span>
-          <span id="freezerFrio" class="span_graus"> 0</span>
+          <span id="VeiculoFrio" class="span_graus"> 0</span>
         </div>
         <div id="alerta_veiculo1" class="caixa-alerta">
           <span class="span_situacaoVeiculo">SITUAÇÃO ATUAL</span>
@@ -145,7 +145,7 @@
         </div>
         <div id="alerta" class="caixa-alerta quente">
           <span class="span_situacao">CRITICO QUENTE</span>
-          <span id="freezerQuente" class="span_graus"> 0</span>
+          <span id="VeiculoQuente" class="span_graus"> 0</span>
         </div>
       </div>
       <!-- DASHBOARDS -->
@@ -240,13 +240,13 @@
                 placeholder="********">
               <span id="campo_confirmar_senha"></span>
             </div>
-            
+
             <div class="campo">
               <label class="funcao">
                 Função:
               </label>
             </div>
-            
+
             <select id="select_cargos">
               <option value="analista junior">analista junior</option>
               <option value="analista pleno">analista pleno</option>
@@ -267,6 +267,10 @@
 
 </html>
 <script>
+  var frio = 0
+  var quente = 0
+  var QuenteFoi = false
+  var FrioFoi = false
 
   // COLOCAR NOME DA EMPRESA NO HTML
   b_usuario.innerHTML = sessionStorage.NOME_EMPRESA;
@@ -286,7 +290,7 @@
     'Set/22',
     'Out/22',
   ]
-  
+
   const horas = [
     '13:40',
     '13:45',
@@ -534,11 +538,13 @@
 <script>
 
   //                               PARTE GRAFICA DO FREEZER
-  let proximaAtualizacao; 
+  let proximaAtualizacao;
 
   window.onload = validarSessao()
   window.onload = obterDadosGrafico(1000);
   window.onload = obterDadosGraficoveiculo(1001);
+
+
 
   // O gráfico é construído com três funções:
   // 1. obterDadosGrafico -> Traz dados do Banco de Dados para montar o gráfico da primeira vez
@@ -612,7 +618,21 @@
       var registro = resposta[i];
       labels.push(registro.momento_grafico);
       dados.datasets[0].data.push(registro.temperatura);
+
+      if (sessionStorage.FREEZER == "false" && registro.temperatura > -12) {
+        sessionStorage.QTDFQUENTE = Number(sessionStorage.QTDFQUENTE) + 1
+      }
+
+      if (sessionStorage.FREEZER == "false" && registro.temperatura < -18) {
+        sessionStorage.QTDFFRIO = Number(sessionStorage.QTDFFRIO) + 1
+      }
     }
+
+    sessionStorage.FREEZER = true
+
+
+    freezerFrio.innerHTML = sessionStorage.QTDFFRIO
+    freezerQuente.innerHTML = sessionStorage.QTDFQUENTE
 
     var temperatura_atual_freezer = registro.temperatura
     span_graus_atual_freezer1.innerHTML = `${temperatura_atual_freezer}°`
@@ -627,8 +647,6 @@
     } else if (temperatura_atual_freezer > -12) {
       alerta_freezer1.style.backgroundColor = `red`
     }
-
-
 
     console.log('----------------------------------------------')
     console.log('O gráfico será plotado com os respectivos valores:')
@@ -708,8 +726,8 @@
               freezerQuente.innerHTML = sessionStorage.QTDFQUENTE
             }
 
-    }
-            myChart.update();
+          }
+          myChart.update();
 
           // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
           proximaAtualizacao = setTimeout(() => atualizarGrafico(idSensor, dados, myChart), 2000);
@@ -781,8 +799,23 @@
       var registro = resposta[i];
       labels.push(registro.momento_grafico);
       dados.datasets[0].data.push(registro.temperatura);
-    }
 
+      if (sessionStorage.VEICULO == "false" && registro.temperatura > -30) {
+        sessionStorage.QTDVQUENTE = Number(sessionStorage.QTDVQUENTE) + 1
+      }
+
+      if (sessionStorage.VEICULO == "false" && registro.temperatura < -36) {
+        sessionStorage.QTDVFRIO = Number(sessionStorage.QTDVFRIO) + 1
+      }
+    }
+    sessionStorage.VEICULO = true
+
+    // sessionStorage.QTDVFRIO = 0
+    // sessionStorage.QTDVQUENTE = 0
+
+
+    VeiculoQuente.innerHTML = sessionStorage.QTDVQUENTE
+    VeiculoFrio.innerHTML = sessionStorage.QTDVFRIO
 
 
     var temperatura_atual_freezer = registro.temperatura
@@ -856,16 +889,21 @@
             console.log(temp)
             span_situacaoAtualVeiculo.innerHTML = `${temp}°`
 
-            if (temp < -13.5 && temp > -16.5) {
+            if (temp < -31.5 && temp > -34.5) {
               alerta_veiculo1.style.backgroundColor = `#85c5ff`
-            } else if (temp <= -16.5 && temp >= -18) {
+            } else if (temp <= -34.5 && temp >= -36) {
               alerta_veiculo1.style.backgroundColor = `blue`
-            } else if (temp < -18) {
+            } else if (temp < -36) {
               alerta_veiculo1.style.backgroundColor = `purple`
-            } else if (temp >= -13.5 && temp <= -12) {
+              sessionStorage.QTDVFRIO = Number(sessionStorage.QTDVFRIO) + 1
+              VeiculoFrio.innerHTML = sessionStorage.QTDVFRIO
+            } else if (temp >= -31.5 && temp <= -30) {
               alerta_veiculo1.style.backgroundColor = `orange`
-            } else if (temp > -12) {
+            } else if (temp > -30) {
               alerta_veiculo1.style.backgroundColor = `red`
+              sessionStorage.QTDVQUENTE = Number(sessionStorage.QTDVQUENTE) + 1
+              VeiculoQuente.innerHTML = sessionStorage.QTDVQUENTE
+              
             }
 
             myChartveiculo.update();
