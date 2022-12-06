@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'smartice'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_40045F9B824446219BF98B9223957097 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_281698704F294C8CB474E62C5661CC51 }}
           package: .
