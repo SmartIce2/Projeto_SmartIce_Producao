@@ -35,13 +35,12 @@ function buscarUltimasMedidasveiculo(idSensor, limite_linhas) {
 
     if (process.env.AMBIENTE_PROCESSO == "producao") {
         instrucaoSql = `select top ${limite_linhas}
-        dht11_temperatura as temperatura, 
-        dht11_umidade as umidade,  
-                        momento,
-                        FORMAT(momento, 'HH:mm:ss') as momento_grafico
-                    from medida
-                    where fk_aquario = ${idAquario}
-                    order by id desc`;
+        temperatura, 
+        dataHora as momento,  
+                        FORMAT(DataHora, 'HH:mm:ss') as momento_grafico
+                    from hist_medida
+                    where fkSensor = ${idSensor}
+                    order by idRegistro desc;`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select 
         temperatura as temperatura,
@@ -94,12 +93,11 @@ function buscarMedidasEmTempoRealveiculos(idSensorveiculo) {
 
     if (process.env.AMBIENTE_PROCESSO == "producao") {
         instrucaoSql = `select top 1
-        dht11_temperatura as temperatura, 
-        dht11_umidade as umidade,  
-                        CONVERT(varchar, momento, 108) as momento_grafico, 
-                        fk_aquario 
-                        from medida where fk_aquario = ${idSensorveiculo} 
-                    order by id desc`;
+        temperatura,
+        dataHora as momento,  
+                        CONVERT(varchar, dataHora, 108) as momento_grafico 
+                        from hist_medida where fkSensor = ${idSensorveiculo} 
+                    order by idRegistro desc`;
 
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select 

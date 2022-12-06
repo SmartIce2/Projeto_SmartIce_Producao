@@ -55,7 +55,7 @@
       <div class="container-alerta">
         <div id="alerta" class="caixa-alerta frio">
           <span class="span_situacao">CRITICO FRIO</span>
-          <span  class="span_graus"> 6</span>
+          <span id="freezerFrio" class="span_graus">0</span>
         </div>
         <div id="alerta_freezer1" class="caixa-alerta">
           <span id="span_situacao_freezer1" class="span_situacao">SITUAÇÃO ATUAL</span>
@@ -63,7 +63,7 @@
         </div>
         <div id="alerta" class="caixa-alerta quente">
           <span class="span_situacao">CRITICO QUENTE</span>
-          <span class="span_graus"> 1</span>
+          <span id="freezerQuente" class="span_graus">0</span>
         </div>
       </div>
 
@@ -137,15 +137,15 @@
       <div class="container-alerta">
         <div id="alerta" class="caixa-alerta frio">
           <span class="span_situacao">CRITICO FRIO</span>
-          <span class="span_graus"> 3</span>
+          <span id="freezerFrio" class="span_graus"> 0</span>
         </div>
-        <div id="alerta" class="caixa-alerta">
-          <span class="span_situacao">SITUAÇÃO ATUAL</span>
-          <span class="span_graus"> -33.5º</span>
+        <div id="alerta_veiculo1" class="caixa-alerta">
+          <span class="span_situacaoVeiculo">SITUAÇÃO ATUAL</span>
+          <span id="span_situacaoAtualVeiculo" class="span_graus"> -33.5º</span>
         </div>
         <div id="alerta" class="caixa-alerta quente">
           <span class="span_situacao">CRITICO QUENTE</span>
-          <span class="span_graus"> 2</span>
+          <span id="freezerQuente" class="span_graus"> 0</span>
         </div>
       </div>
       <!-- DASHBOARDS -->
@@ -534,8 +534,7 @@
 <script>
 
   //                               PARTE GRAFICA DO FREEZER
-
-  let proximaAtualizacao;
+  let proximaAtualizacao; 
 
   window.onload = validarSessao()
   window.onload = obterDadosGrafico(1000);
@@ -614,8 +613,6 @@
       labels.push(registro.momento_grafico);
       dados.datasets[0].data.push(registro.temperatura);
     }
-
-
 
     var temperatura_atual_freezer = registro.temperatura
     span_graus_atual_freezer1.innerHTML = `${temperatura_atual_freezer}°`
@@ -701,14 +698,18 @@
               alerta_freezer1.style.backgroundColor = `blue`
             } else if (temp < -18) {
               alerta_freezer1.style.backgroundColor = `purple`
+              sessionStorage.QTDFFRIO = Number(sessionStorage.QTDFFRIO) + 1
+              freezerFrio.innerHTML = sessionStorage.QTDFFRIO
             } else if (temp >= -13.5 && temp <= -12) {
               alerta_freezer1.style.backgroundColor = `orange`
             } else if (temp > -12) {
               alerta_freezer1.style.backgroundColor = `red`
+              sessionStorage.QTDFQUENTE = Number(sessionStorage.QTDFQUENTE) + 1
+              freezerQuente.innerHTML = sessionStorage.QTDFQUENTE
             }
 
+    }
             myChart.update();
-          }
 
           // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
           proximaAtualizacao = setTimeout(() => atualizarGrafico(idSensor, dados, myChart), 2000);
@@ -785,17 +786,17 @@
 
 
     var temperatura_atual_freezer = registro.temperatura
-    span_graus_atual_freezer1.innerHTML = `${temperatura_atual_freezer}°`
-    if (temperatura_atual_freezer < -13.5 && temperatura_atual_freezer > -16.5) {
-      alerta_freezer1.style.backgroundColor = `#85c5ff`
-    } else if (temperatura_atual_freezer <= -16.5 && temperatura_atual_freezer >= -18) {
-      alerta_freezer1.style.backgroundColor = `blue`
-    } else if (temperatura_atual_freezer < -18) {
-      alerta_freezer1.style.backgroundColor = `purple`
-    } else if (temperatura_atual_freezer >= -13.5 && temperatura_atual_freezer <= -12) {
-      alerta_freezer1.style.backgroundColor = `orange`
-    } else if (temperatura_atual_freezer > -12) {
-      alerta_freezer1.style.backgroundColor = `red`
+    span_situacaoAtualVeiculo.innerHTML = `${temperatura_atual_freezer}°`
+    if (temperatura_atual_freezer < -31.5 && temperatura_atual_freezer > -34.5) {
+      alerta_veiculo1.style.backgroundColor = `#85c5ff`
+    } else if (temperatura_atual_freezer <= -34.5 && temperatura_atual_freezer >= -36) {
+      alerta_veiculo1.style.backgroundColor = `blue`
+    } else if (temperatura_atual_freezer < -36) {
+      alerta_veiculo1.style.backgroundColor = `purple`
+    } else if (temperatura_atual_freezer >= -31.5 && temperatura_atual_freezer <= -30) {
+      alerta_veiculo1.style.backgroundColor = `orange`
+    } else if (temperatura_atual_freezer > -30) {
+      alerta_veiculo1.style.backgroundColor = `red`
     }
 
 
@@ -853,18 +854,18 @@
             // registro da nova temperatura no SITUACAO ATUAL
             var temp = novoRegistro[0].temperatura
             console.log(temp)
-            span_graus_atual_freezer1.innerHTML = `${temp}°`
+            span_situacaoAtualVeiculo.innerHTML = `${temp}°`
 
             if (temp < -13.5 && temp > -16.5) {
-              alerta_freezer1.style.backgroundColor = `#85c5ff`
+              alerta_veiculo1.style.backgroundColor = `#85c5ff`
             } else if (temp <= -16.5 && temp >= -18) {
-              alerta_freezer1.style.backgroundColor = `blue`
+              alerta_veiculo1.style.backgroundColor = `blue`
             } else if (temp < -18) {
-              alerta_freezer1.style.backgroundColor = `purple`
+              alerta_veiculo1.style.backgroundColor = `purple`
             } else if (temp >= -13.5 && temp <= -12) {
-              alerta_freezer1.style.backgroundColor = `orange`
+              alerta_veiculo1.style.backgroundColor = `orange`
             } else if (temp > -12) {
-              alerta_freezer1.style.backgroundColor = `red`
+              alerta_veiculo1.style.backgroundColor = `red`
             }
 
             myChartveiculo.update();
